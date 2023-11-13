@@ -40,7 +40,7 @@ public class AuctionsController : ControllerBase
         return Ok(_mapper.Map<Auction, AuctionDto>(item));
     }
 
-     [HttpPost]
+    [HttpPost]
     public async Task<ActionResult<AuctionDto>> Create([FromBody] CreateAuctionDto auctionDto, CancellationToken cancellationToken = default)
     {
         var item = new Auction()
