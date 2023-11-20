@@ -1,7 +1,9 @@
 ﻿using AuctionService.Data;
 using AuctionService.Dtos;
 using AuctionService.Entities;
+using IntegrationEvents.Events;
 using AutoMapper;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +15,13 @@ public class AuctionsController : ControllerBase
 {
     private readonly AuctionDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public AuctionsController(AuctionDbContext dbContext, IMapper mapper)
+    public AuctionsController(AuctionDbContext dbContext, IMapper mapper, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -47,6 +51,7 @@ public class AuctionsController : ControllerBase
         {
             AuctionEnd = auctionDto.AuctionEnd,
             ReservePrice = auctionDto.ReservePrice,
+            SellerName = "TestSellerName",
             Item = new AuctionItem()
             {
                 Make = auctionDto.Make,
@@ -58,7 +63,8 @@ public class AuctionsController : ControllerBase
             }
         };
 
-        _dbContext.Add(item);
+         _dbContext.Add(item);
+        await _publishEndpoint.Publish(_mapper.Map<Auction, AuctionCreatedEvent>(item));
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new {item.Id}, _mapper.Map<Auction, AuctionDto>(item));

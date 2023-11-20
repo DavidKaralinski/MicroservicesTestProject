@@ -26,7 +26,7 @@ public class AuctionItemsController : ControllerBase
         query.PageNumber(filter.PageNumber);
         query.PageSize(filter.PageSize);
 
-        var entityProps = typeof(AuctionItem).GetProperties(System.Reflection.BindingFlags.Public).Select(x => x.Name);
+        var entityProps = typeof(AuctionItem).GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).Select(x => x.Name);
 
         if(filter.OrderableFieldName is not null && entityProps.Any(x => x.Equals(filter.OrderableFieldName, StringComparison.InvariantCultureIgnoreCase)))
         {

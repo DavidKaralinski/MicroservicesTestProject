@@ -1,4 +1,7 @@
 using SearchService.Data;
+using MassTransit;
+using SearchService.IntegrationEvents.EventHandlers;
+using IntegrationEvents.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -10,6 +13,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddMassTransit(x => 
+{
+    x.AddConsumer<AuctionCreatedEventConsumer>();
+    //x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
+
+    x.UsingRabbitMq((context, cfg) => 
+    {
+        cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
+
+        cfg.ReceiveEndpoint("search-auction-created", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<AuctionCreatedEventConsumer>(context);
+        });
+
+        //cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
