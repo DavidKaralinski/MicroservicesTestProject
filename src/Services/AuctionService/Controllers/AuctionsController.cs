@@ -88,6 +88,7 @@ public class AuctionsController : ControllerBase
         item.Item.Year = auctionDto.Year;
         item.Item.Mileage = auctionDto.Mileage;
 
+        await _publishEndpoint.Publish(_mapper.Map<Auction, AuctionUpdatedEvent>(item));
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();
@@ -106,6 +107,7 @@ public class AuctionsController : ControllerBase
 
         _dbContext.Remove(item);
 
+        await _publishEndpoint.Publish(new AuctionDeletedEvent(item.Id));
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();

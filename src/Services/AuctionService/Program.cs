@@ -33,6 +33,8 @@ builder.Services.AddMassTransit(x =>
     x.UsingRabbitMq((context, cfg) => 
     {
         cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
+        cfg.Message<AuctionUpdatedEvent>(m => m.SetEntityName("auction-updated"));
+        cfg.Message<AuctionDeletedEvent>(m => m.SetEntityName("auction-deleted"));
 
         cfg.ConfigureEndpoints(context);
     });

@@ -17,16 +17,32 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddMassTransit(x => 
 {
     x.AddConsumer<AuctionCreatedEventConsumer>();
+    x.AddConsumer<AuctionUpdatedEventConsumer>();
+    x.AddConsumer<AuctionDeletedEventConsumer>();
     //x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
 
     x.UsingRabbitMq((context, cfg) => 
     {
         cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
+        cfg.Message<AuctionUpdatedEvent>(m => m.SetEntityName("auction-updated"));
+        cfg.Message<AuctionDeletedEvent>(m => m.SetEntityName("auction-deleted"));
 
         cfg.ReceiveEndpoint("search-auction-created", e => 
         {
             e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
             e.ConfigureConsumer<AuctionCreatedEventConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("search-auction-updated", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<AuctionUpdatedEventConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("search-auction-deleted", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<AuctionDeletedEventConsumer>(context);
         });
 
         //cfg.ConfigureEndpoints(context);

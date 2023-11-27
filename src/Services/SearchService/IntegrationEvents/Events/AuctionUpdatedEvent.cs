@@ -1,11 +1,3 @@
 namespace IntegrationEvents.Events;
 
-public record AuctionUpdatedEvent()
-{
-    public Guid Id { get; init; }
-    public string Make { get; init; }
-    public string Model { get; init; }
-    public int Year { get; init; }   
-    public string Color { get; init; }
-    public int Mileage { get; init; }
-}
+public record AuctionUpdatedEvent(Guid Id, string Male, string Make, string Model, int Year, string Color, int Mileage);

@@ -1,6 +1,5 @@
 namespace IntegrationEvents.Events;
 
-public record AuctionDeletedEvent()
+public record AuctionDeletedEvent(Guid Id)
 {
-    public Guid Id { get; init; }
 }

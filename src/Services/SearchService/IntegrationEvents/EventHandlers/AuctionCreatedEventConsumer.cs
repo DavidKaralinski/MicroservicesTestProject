@@ -1,6 +1,5 @@
 using AutoMapper;
 using MassTransit;
-using Microsoft.AspNetCore.Http.Features;
 using MongoDB.Entities;
 using SearchService.Entities;
 using IntegrationEvents.Events;
