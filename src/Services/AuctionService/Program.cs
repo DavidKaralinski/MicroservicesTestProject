@@ -40,6 +40,14 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddAuthentication().AddJwtBearer(opt => 
+{
+    opt.Authority = configuration["IdentityServiceUrl"];
+    opt.RequireHttpsMetadata = false;
+    opt.TokenValidationParameters.ValidateAudience = false;
+    opt.TokenValidationParameters.NameClaimType = "user_name";
+});
+
 var app = builder.Build();
 
 app.InitializeDb();
@@ -53,6 +61,7 @@ if(app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

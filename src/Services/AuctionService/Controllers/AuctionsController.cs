@@ -6,6 +6,7 @@ using AutoMapper;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuctionService.Controllers;
 
@@ -44,14 +45,20 @@ public class AuctionsController : ControllerBase
         return Ok(_mapper.Map<Auction, AuctionDto>(item));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> Create([FromBody] CreateAuctionDto auctionDto, CancellationToken cancellationToken = default)
     {
+        if(User.Identity?.Name is null)
+        {
+            return BadRequest();
+        }
+
         var item = new Auction()
         {
             AuctionEnd = auctionDto.AuctionEnd,
             ReservePrice = auctionDto.ReservePrice,
-            SellerName = "TestSellerName",
+            SellerName = User.Identity.Name,
             Item = new AuctionItem()
             {
                 Make = auctionDto.Make,
@@ -70,6 +77,7 @@ public class AuctionsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new {item.Id}, _mapper.Map<Auction, AuctionDto>(item));
     }
 
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Update([FromRoute] Guid id,
      [FromBody] UpdateAuctionDto auctionDto,
@@ -81,6 +89,12 @@ public class AuctionsController : ControllerBase
         {
             return NotFound();
         }
+
+        if(User.Identity?.Name != item.SellerName)
+        {
+            return Forbid();
+        }
+
 
         item.Item.Model = auctionDto.Model;
         item.Item.Make = auctionDto.Make;
@@ -94,6 +108,7 @@ public class AuctionsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete([FromRoute] Guid id,
      CancellationToken cancellationToken = default)
@@ -103,6 +118,11 @@ public class AuctionsController : ControllerBase
         if (item is null)
         {
             return NotFound();
+        }
+
+        if(User.Identity?.Name != item.SellerName)
+        {
+            return Forbid();
         }
 
         _dbContext.Remove(item);
