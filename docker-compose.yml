@@ -21,6 +21,50 @@ services:
     ports:
       - 5672:5672
       - 15673:15672
+  identity-svc:
+    image: karalinskidavid/microservicestestproject/identity-svc:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/IdentityService/Dockerfile
+    ports:
+      - 5001:80
+    env_file:
+      - ./src/Services/IdentityService/.env
+    depends_on:
+      - postgres
+  auction-svc:
+    image: karalinskidavid/microservicestestproject/auction-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/AuctionService/Dockerfile
+    ports:
+      - 7001:80
+    env_file:
+      - ./src/Services/AuctionService/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+  search-svc:
+    image: karalinskidavid/microservicestestproject/search-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/SearchService/Dockerfile
+    ports:
+      - 7002:80
+    env_file:
+      - ./src/Services/SearchService/.env
+    depends_on:
+      - mongodb
+      - rabbitmq
+  gateway-svc:
+    image: karalinskidavid/microservicestestproject/gateway-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/GatewayService/Dockerfile
+    ports:
+      - 6001:80
+    env_file:
+      - ./src/Services/GatewayService/.env
 volumes:
   pgdata:
   mongodata:

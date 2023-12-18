@@ -10,7 +10,7 @@ public static class DbInitializer
     public static async Task InitializeDatabaseAsync(this WebApplication app)
     {
         await DB.InitAsync("SearchDb",
-            MongoClientSettings.FromConnectionString(app.Configuration.GetConnectionString("SearchDbConnectionString")));
+            MongoClientSettings.FromConnectionString(app.Configuration.GetConnectionString("SearchDb")));
 
         await DB.Index<AuctionItem>()
             .Key(x => x.Make, KeyType.Text)

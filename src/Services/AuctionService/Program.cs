@@ -32,6 +32,12 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) => 
     {
+        cfg.Host(configuration.GetValue("RabbitMq:Host", "localhost"), "/", host => 
+        {
+            host.Username(configuration.GetValue("RabbitMq:User", "guest"));
+            host.Password(configuration.GetValue("RabbitMq:Pasword", "guest"));
+        });
+
         cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
         cfg.Message<AuctionUpdatedEvent>(m => m.SetEntityName("auction-updated"));
         cfg.Message<AuctionDeletedEvent>(m => m.SetEntityName("auction-deleted"));
