@@ -1,3 +1,5 @@
+'use server'
+
 export const get = async<T> (url: string) => {
     const res = await fetch(url);
 
