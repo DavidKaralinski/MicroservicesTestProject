@@ -2,18 +2,22 @@
 
 import { Pagination } from 'flowbite-react'
 import React from 'react'
+import { useSearchParamsStore } from '../hooks/useSearchParamsStore'
 
 type AppPaginationProps = {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (pageNumber: number) => void;
 }
 
-export default function AppPagination({currentPage, totalPages, onPageChange}: AppPaginationProps) {
+export default function AppPagination({}: AppPaginationProps) {
+  const {pageCount, pageNumber, setParams} = useSearchParamsStore();
+
+  const onPageChange = (selectedNumber: number) => {
+    setParams({pageNumber: selectedNumber});
+  }
+
   return (
     <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
+        currentPage={pageNumber}
+        totalPages={pageCount}
         onPageChange={onPageChange}
         layout='pagination'
         showIcons={true}
