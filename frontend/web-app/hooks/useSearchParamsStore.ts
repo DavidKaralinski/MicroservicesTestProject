@@ -12,6 +12,8 @@ type State = {
     filterBy: string
     seller?: string
     winner?: string
+    endingInLessThan?: number;
+    filterByStatus: string;
 }
 
 type Actions = {
@@ -29,7 +31,8 @@ const initialState: State = {
     orderBy: 'Make',
     filterBy: 'Live',
     seller: undefined,
-    winner: undefined
+    winner: undefined,
+    filterByStatus: 'Live'
 }
 
 export const useSearchParamsStore = create<State & Actions>()((set) => ({
@@ -37,9 +40,18 @@ export const useSearchParamsStore = create<State & Actions>()((set) => ({
 
     setParams: (newParams: Partial<State>) => {
         set((state) => {
+            if(newParams.filterByStatus){
+                return { ...state, ...newParams, endingInLessThan: undefined};
+            }
+
+            if(newParams.endingInLessThan){
+                return { ...state, ...newParams, filterByStatus: undefined};
+            }
+
             if(newParams.pageCount && (state.pageNumber > newParams.pageCount)){
                 return {...state, ...newParams, pageNumber: newParams.pageCount}
             }
+
             return {...state, ...newParams}
         })
     },

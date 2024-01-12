@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
-import { useSearchParamsStore } from '../hooks/useSearchParamsStore'
+import { useSearchParamsStore } from '../../hooks/useSearchParamsStore'
 
 export default function Searchbar() {
     const searchWord = useSearchParamsStore(state => state.searchValue);

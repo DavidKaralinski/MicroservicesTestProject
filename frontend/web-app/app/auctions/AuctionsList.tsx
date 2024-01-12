@@ -2,12 +2,12 @@
 
 import { AuctionCard } from "./AuctionCard";
 import { ApplicationUrls } from "../common/appConfiguration";
-import { Auction, PaginatedResponse } from "../types";
+import { Auction, PaginatedResponse } from "../../types";
 import AppPagination from "../components/AppPagination";
-import { get } from "../services/httpRequestService";
+import { get } from "../../actions/auctionActions";
 import { useEffect, useState } from "react";
 import AuctionFilters from "./AuctionFilters";
-import { useSearchParamsStore } from "../hooks/useSearchParamsStore";
+import { useSearchParamsStore } from "../../hooks/useSearchParamsStore";
 import EmptyFilterResults from "../components/EmptyFilterResults";
 import { Spinner } from "flowbite-react";
 
@@ -15,26 +15,26 @@ export const AuctionsList = () => {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { searchValue, pageNumber, pageSize, setParams, orderBy } =
+  const { searchValue, pageNumber, pageSize, setParams, orderBy, filterByStatus, endingInLessThan } =
     useSearchParamsStore();
 
   useEffect(() => {
     setIsLoading(true);
 
     get<PaginatedResponse<Auction>>(
-      `${
-        ApplicationUrls.gatewayUrl
-      }/search/AuctionItems?pageSize=${pageSize}&pageNumber=${pageNumber}${
-        searchValue ? "&filterByMake=" + searchValue : ""
-      }`
+      `${ApplicationUrls.gatewayUrl}/search/AuctionItems?pageSize=${pageSize}&pageNumber=${pageNumber}` +
+        (searchValue ? "&filterByMake=" + searchValue : "") +
+        (filterByStatus ? "&filterByStatus=" + filterByStatus : "") +
+        (orderBy ? "&orderableFieldName=" + orderBy : "") + 
+        (endingInLessThan ? "&endingInLessThan=" + endingInLessThan : "")
     ).then((data) => {
       setAuctions(data.results ?? []);
       setParams({ pageCount: data.pageCount });
       setIsLoading(false);
     });
-  }, [pageNumber, pageSize, searchValue]);
+  }, [pageNumber, pageSize, searchValue, orderBy, endingInLessThan, filterByStatus]);
 
-  if(!isLoading){
+  if(isLoading){
     return <Spinner title="Loading" />
   }
 

@@ -28,6 +28,19 @@ public static class Config
                 AllowedScopes = new [] { "openid", "profile", "auctionService" },
                 AllowedGrantTypes = new [] { GrantType.ResourceOwnerPassword },
                 RedirectUris = new [] { "https://example.com" }
+            },
+            new()
+            {
+                ClientId = "nextApp",
+                ClientName = "nextApp",
+                ClientSecrets = new [] { new Secret("Secret".Sha256()) },
+                AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                RequirePkce = false,
+                RedirectUris = new [] { "http://localhost:3000/api/auth/callback/id-server" },
+                AllowOfflineAccess = true,
+                AllowedScopes = new [] { "openid", "profile", "auctionService" },
+                AccessTokenLifetime = 3600*24,
+                AlwaysIncludeUserClaimsInIdToken = true
             }
         };
 }

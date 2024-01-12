@@ -2,7 +2,7 @@
 
 import { Pagination } from 'flowbite-react'
 import React from 'react'
-import { useSearchParamsStore } from '../hooks/useSearchParamsStore'
+import { useSearchParamsStore } from '../../hooks/useSearchParamsStore'
 
 type AppPaginationProps = {
 }

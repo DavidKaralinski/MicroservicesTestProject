@@ -8,4 +8,5 @@ public record AuctionItemsFilter(string? FilterByMake, string? FilterByColor, st
     int? CurrentHighBidFrom = null, int? CurrentHighBidTo = int.MaxValue,
     int? ReservePriceFrom = 0, int? ReservePriceTo = int.MaxValue,
     int? YearFrom = 0, int? YearTo = int.MaxValue,
+    int? EndingInLessThan = null,
     int PageNumber = 1, int PageSize = 10);

@@ -43,6 +43,9 @@ public class AuctionItemsController : ControllerBase
 
         query.Match(x =>
             x.Year >= filter.YearFrom && x.Year <= filter.YearTo &&
+            filter.EndingInLessThan == null ? 
+                true : 
+                x.AuctionEnd.HasValue && (DateTime.UtcNow - x.AuctionEnd.Value).TotalHours < filter.EndingInLessThan &&
             x.Mileage >= filter.MileageFrom && x.Mileage <= filter.MileageTo &&
             ((!x.CurrentHighBid.HasValue && !filter.CurrentHighBidFrom.HasValue) || 
                 (x.CurrentHighBid >= filter.CurrentHighBidFrom && x.CurrentHighBid <= filter.CurrentHighBidTo)) &&

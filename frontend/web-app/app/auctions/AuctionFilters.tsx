@@ -5,7 +5,7 @@ import React from "react";
 import { AiOutlineClockCircle, AiOutlineSortAscending } from "react-icons/ai";
 import { GiFinishLine, GiFlame } from "react-icons/gi";
 import { BsFillStopCircleFill } from "react-icons/bs";
-import { useSearchParamsStore } from "../hooks/useSearchParamsStore";
+import { useSearchParamsStore } from "../../hooks/useSearchParamsStore";
 
 type AuctionFiltersProps = {
 };
@@ -44,13 +44,13 @@ const filterButtons = [
   {
     label: "Completed",
     icon: BsFillStopCircleFill,
-    value: "Completed",
+    value: "Finished",
   },
 ];
 
 export default function AuctionFilters({
 }: AuctionFiltersProps) {
-  const { pageSize, setParams, orderBy, filterBy } = useSearchParamsStore();
+  const { pageSize, setParams, orderBy, filterByStatus, endingInLessThan } = useSearchParamsStore();
 
   return (
     <div className="flex justify-between items-center mb-4">
@@ -60,8 +60,15 @@ export default function AuctionFilters({
           {filterButtons.map(({ label, icon: Icon, value }) => (
             <Button
               key={value}
-              onClick={() => {}}
-              color={value === filterBy ? "red" : "gray"}
+              onClick={() => { 
+                if(value === 'EndingLessThan6'){
+                  setParams({endingInLessThan: 6});
+                  return;
+                }
+
+                setParams({filterByStatus: value});
+              }}
+              color={value === filterByStatus || (value === "EndingLessThan6" && !!endingInLessThan) ? "red" : "gray"}
             >
               <Icon className="mr-3 h-4 w-4" />
               {label}
