@@ -6,14 +6,12 @@ type State = {
     pageNumber: number
     pageSize: number
     pageCount: number
-    searchTerm: string
+    searchTerm: string | null
     searchValue: string | null
     orderBy: string
     filterBy: string
     seller?: string
     winner?: string
-    endingInLessThan?: number;
-    filterByStatus: string;
 }
 
 type Actions = {
@@ -28,11 +26,10 @@ const initialState: State = {
     pageCount: 1,
     searchTerm: '',
     searchValue: null,
-    orderBy: 'Make',
-    filterBy: 'Live',
+    orderBy: 'make',
+    filterBy: 'live',
     seller: undefined,
     winner: undefined,
-    filterByStatus: 'Live'
 }
 
 export const useSearchParamsStore = create<State & Actions>()((set) => ({
@@ -40,12 +37,12 @@ export const useSearchParamsStore = create<State & Actions>()((set) => ({
 
     setParams: (newParams: Partial<State>) => {
         set((state) => {
-            if(newParams.filterByStatus){
-                return { ...state, ...newParams, endingInLessThan: undefined};
+            if(newParams.seller){
+                return {...state, ...newParams, winner: undefined}
             }
 
-            if(newParams.endingInLessThan){
-                return { ...state, ...newParams, filterByStatus: undefined};
+            if(newParams.winner){
+                return {...state, ...newParams, seller: undefined}
             }
 
             if(newParams.pageCount && (state.pageNumber > newParams.pageCount)){
@@ -59,6 +56,6 @@ export const useSearchParamsStore = create<State & Actions>()((set) => ({
     reset: () => set(initialState),
 
     setSearchValue: (value: string | null) => {
-        set({searchValue: value})
+        set({searchTerm: value})
     }
 }))

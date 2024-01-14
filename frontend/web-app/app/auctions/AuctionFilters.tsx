@@ -39,7 +39,7 @@ const filterButtons = [
   {
     label: "Ending < 6h",
     icon: GiFinishLine,
-    value: "EndingLessThan6",
+    value: "EndingSoon",
   },
   {
     label: "Completed",
@@ -50,7 +50,7 @@ const filterButtons = [
 
 export default function AuctionFilters({
 }: AuctionFiltersProps) {
-  const { pageSize, setParams, orderBy, filterByStatus, endingInLessThan } = useSearchParamsStore();
+  const { pageSize, setParams, orderBy, filterBy } = useSearchParamsStore();
 
   return (
     <div className="flex justify-between items-center mb-4">
@@ -61,14 +61,9 @@ export default function AuctionFilters({
             <Button
               key={value}
               onClick={() => { 
-                if(value === 'EndingLessThan6'){
-                  setParams({endingInLessThan: 6});
-                  return;
-                }
-
-                setParams({filterByStatus: value});
+                setParams({filterBy: value});
               }}
-              color={value === filterByStatus || (value === "EndingLessThan6" && !!endingInLessThan) ? "red" : "gray"}
+              color={value === filterBy ? "red" : "gray"}
             >
               <Icon className="mr-3 h-4 w-4" />
               {label}

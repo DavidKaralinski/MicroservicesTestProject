@@ -32,7 +32,7 @@ export default function Searchbar() {
             onKeyDown={onKeyPressed}
             value={searchWordValue || ''}
             type='text'
-            placeholder='Search for cars by make'
+            placeholder='Search for cars by make, model or colour'
             className='
                 flex-grow
                 pl-5

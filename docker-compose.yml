@@ -63,8 +63,10 @@ services:
       dockerfile: ./src/Services/GatewayService/Dockerfile
     ports:
       - 6001:80
-    env_file:
-      - ./src/Services/GatewayService/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - IdentityServiceUrl=http://identity-svc
 volumes:
   pgdata:
   mongodata:
