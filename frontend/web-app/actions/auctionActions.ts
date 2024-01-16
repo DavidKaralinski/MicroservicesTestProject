@@ -1,36 +1,111 @@
-'use server'
+"use client";
 
+import { Auction, PaginatedResponse } from "@/types";
+import { httpGet, httpPut, httpPost } from "./httpActions";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParamsStore } from "@/hooks/useSearchParamsStore";
+import qs from "query-string";
 import { applicationUrls } from "@/common/appConfiguration";
-import { getTokenWorkaround } from "./authActions";
+import toast from "react-hot-toast";
 
-export const get = async<T> (url: string) => {
-    const res = await fetch(url);
+export const useGetAuctions = () => {
+  const [response, setResponse] = useState<
+    PaginatedResponse<Auction> | undefined
+  >(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
-    if(!res.ok) throw new Error(res.statusText);
+  const params = useSearchParamsStore((state) => ({
+    pageNumber: state.pageNumber,
+    pageSize: state.pageSize,
+    searchTerm: state.searchTerm,
+    orderBy: state.orderBy,
+    filterBy: state.filterBy,
+    winner: state.winner,
+    seller: state.seller,
+  }));
 
-    return await res.json() as T;
-}
-
-export const updateAuctionTest = async() => {
-    const token = await getTokenWorkaround();
-    console.log('token = ' + token?.access_token);
-
-    const data = {
-        make: 'Ford',
-        model: 'GT',
-        color: 'White',
-        year: 2020,
-        mileage: Math.floor(Math.random() * 100000) + 1
-    };
-
-    const res = await fetch(`${applicationUrls.gatewayUrl}/auctions/afbee524-5972-4075-8800-7d1f9d7b0a0c`, {
-        method: 'PUT',
-        headers: { 
-            'Authorization': `Bearer ${token?.access_token}`,
-            'Content-type': 'application/json'
-         },
-        body: JSON.stringify(data)
+  const url = useMemo(() => {
+    return qs.stringifyUrl({
+      url: `${applicationUrls.gatewayUrl}/search/AuctionItems`,
+      query: params,
     });
+  }, [params]);
 
-    return { status: res.status, message: res.statusText };
-}
+  useEffect(() => {
+    if (!url) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    httpGet<PaginatedResponse<Auction>>(url).then((result) => {
+      setResponse(result);
+      setIsLoading(false);
+    }).catch((error) => {
+        setIsLoading(false);
+        toast.error(error.message);
+      });
+  }, [url]);
+
+  return { response, isLoading };
+};
+
+export const useGetAuctionById = (id: string) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [response, setResponse] = useState<Auction | undefined>(undefined);
+  
+    useEffect(() => {
+        httpGet<Auction>(`${applicationUrls.gatewayUrl}/auctions/${id}`).then((result) => {
+            setResponse(result);
+            setIsLoading(false);
+          }).catch((error) => {
+              setIsLoading(false);
+              toast.error(error.message);
+            });
+    }, []);
+    
+  
+    return { response, isLoading };
+  };
+
+export const useUpdateAuction = () => {
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const update = (data: Partial<Auction>) => {
+    setIsUpdating(true);
+    const url = `${applicationUrls.gatewayUrl}/auctions/${data.id}`;
+
+    httpPut(url, data, true)
+      .then((r) => {
+        setIsUpdating(false);
+        toast.success('Auction updated');
+      })
+      .catch((error) => {
+        setIsUpdating(false);
+        toast.error(error.message);
+      });
+  };
+
+  return { update, isUpdating };
+};
+
+export const useCreateAuction = () => {
+  const [response, setResponse] = useState<Auction | undefined>(undefined);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const create = (data: Auction) => {
+    setIsCreating(true);
+    const url = `${applicationUrls.gatewayUrl}/auctions`;
+
+    httpPost<Auction>(url, data, true).then((r) => {
+      setIsCreating(false);
+      setResponse(r);
+      toast.success('Auction created');
+    }).catch((error) => {
+        setIsCreating(false);
+        toast.error(error.message);
+      });;
+  };
+
+  return { create, isCreating, response };
+};

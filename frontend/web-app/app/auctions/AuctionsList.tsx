@@ -4,7 +4,7 @@ import { AuctionCard } from "./AuctionCard";
 import { applicationUrls } from "../../common/appConfiguration";
 import { Auction, PaginatedResponse } from "../../types";
 import AppPagination from "../components/AppPagination";
-import { get } from "../../actions/auctionActions";
+import { useGetAuctions } from "../../actions/auctionActions";
 import { useEffect, useMemo, useState } from "react";
 import AuctionFilters from "./AuctionFilters";
 import { useSearchParamsStore } from "../../hooks/useSearchParamsStore";
@@ -13,8 +13,8 @@ import { Spinner } from "flowbite-react";
 import qs from 'query-string';
 
 export const AuctionsList = () => {
-  const [auctions, setAuctions] = useState<Auction[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+   const [auctions, setAuctions] = useState<Auction[]>([]);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const params = useSearchParamsStore(state => ({
     pageNumber: state.pageNumber,
@@ -32,15 +32,23 @@ export const AuctionsList = () => {
     return qs.stringifyUrl({url: `${applicationUrls.gatewayUrl}/search/AuctionItems`, query: params})
   }, [params]);
 
+  const { response, isLoading } = useGetAuctions();
+
   useEffect(() => {
-    setIsLoading(true);
-    console.log(`url = ${url}`);
-    get<PaginatedResponse<Auction>>(url).then((data) => {
-      setAuctions(data.results ?? []);
-      setParams({ pageCount: data.pageCount });
-      setIsLoading(false);
-    });
-  }, [url]);
+    setAuctions(response?.results ?? []);
+    setParams({ pageCount: response?.pageCount });
+  }, [response]);
+
+
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   console.log(`url = ${url}`);
+  //   get<PaginatedResponse<Auction>>(url).then((data) => {
+  //     setAuctions(data.results ?? []);
+  //     setParams({ pageCount: data.pageCount });
+  //     setIsLoading(false);
+  //   });
+  // }, [url]);
 
   if(isLoading){
     return <>Loading</>
@@ -49,7 +57,7 @@ export const AuctionsList = () => {
   return (
     <>
       <AuctionFilters />
-      {auctions.length === 0 ? (
+      {auctions.length === 0 && !isLoading ? (
         <EmptyFilterResults showReset />
       ) : (
         <>
