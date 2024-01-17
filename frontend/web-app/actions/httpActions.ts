@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from "next/cache";
 import { getTokenWorkaround } from "./authActions";
 
 export const httpGet = async<T>(url: string, needsAuthorization?: boolean) => {
@@ -28,8 +29,6 @@ export const httpPut = async(url: string, data: any, needsAuthorization?: boolea
         body: JSON.stringify(data)
     };
 
-    console.log(requestOptions);
-
     const res = await fetch(url, requestOptions);
     if(!res.ok) throw new Error(res.statusText);
 
@@ -53,11 +52,11 @@ export const httpPost = async<T>(url: string, data: T, needsAuthorization?: bool
     return (await res.json()) as T;
 }
 
-export const httpDelete = async<T>(url: string, data: T, needsAuthorization?: boolean) => {
+export const httpDelete = async(url: string, needsAuthorization?: boolean) => {
     const requestOptions = {
         headers: {
             'Content-type': 'application/json',
-            'Authorization': needsAuthorization ? `Bearer ${await getTokenWorkaround()}` : 'None'
+            'Authorization': needsAuthorization ? `Bearer ${(await getTokenWorkaround())?.access_token}` : 'None'
         },
         method: 'DELETE',
     };
@@ -67,4 +66,8 @@ export const httpDelete = async<T>(url: string, data: T, needsAuthorization?: bo
     if(!res.ok) throw new Error(res.statusText);
 
     return;
+}
+
+export const invalidatePath = (path: string) => {
+    revalidatePath(path);
 }

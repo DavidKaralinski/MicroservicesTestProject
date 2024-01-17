@@ -1,14 +1,18 @@
 'use client'
 
-import { useGetAuctionById } from '@/actions/auctionActions'
+import { useDeleteAuction, useGetAuctionById } from '@/actions/auctionActions'
 import Heading from '@/app/components/Heading';
 import React from 'react'
 import { CountdownTimer } from '../../CountdownTimer';
 import CarImage from '../../CarImage';
 import AuctionDetails from './AuctionDetails';
+import { useRouter } from 'next/navigation';
+import { Button } from 'flowbite-react';
 
 export default function AuctionDetailsPage({params}: {params: {id: string}}) {
   const { response: auction, isLoading } = useGetAuctionById(params.id);
+  const { deleteAuction, isDeleting } = useDeleteAuction();
+  const router = useRouter();
 
   if(isLoading || !auction){
     return <>Loading</>;
@@ -17,7 +21,13 @@ export default function AuctionDetailsPage({params}: {params: {id: string}}) {
   return (
     <div>
       <div className="flex justify-between">
-        <Heading title={auction?.make + " " + auction.model} />
+        <div className='flex items-center gap-2'>
+          <Heading title={auction?.make + " " + auction.model} />
+          {<Button onClick={() => router.push(`/auctions/update/${auction.id}`)} outline>Update</Button>}
+          {<Button isProcessing={isDeleting} color='failure' onClick={() => {
+            deleteAuction(auction.id);
+          }} outline>Delete</Button>}
+        </div>
         <div className="flex gap-3">
           <h3 className="text-2xl font-semibold">Time remaining:</h3>
           <CountdownTimer endDate={auction.auctionEnd} />

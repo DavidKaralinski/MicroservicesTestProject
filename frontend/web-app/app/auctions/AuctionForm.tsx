@@ -10,19 +10,24 @@ import { Auction } from "@/types";
 type AuctionFormProps = {
   onSubmit: (data: Auction) => void;
   isProcessing: boolean;
-}
+  data?: Auction;
+};
 
 export default function AuctionForm(props: AuctionFormProps) {
   const {
     control,
     handleSubmit,
     setFocus,
+    reset,
     formState: { isSubmitting, isValid, errors },
   } = useForm({ mode: "onTouched" });
 
   useEffect(() => {
+    if(props.data){
+      reset({...props.data});
+    }
     setFocus("make");
-  }, [setFocus]);
+  }, [setFocus, props.data]);
 
   const onSubmit = (data: FieldArray) => {
     props.onSubmit(data as Auction);
@@ -66,30 +71,33 @@ export default function AuctionForm(props: AuctionFormProps) {
           rules={{ required: "Mileage is required" }}
         />
       </div>
+      {!props.data && (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <InputField
+              label="Reserve price"
+              name="reservePrice"
+              type="number"
+              control={control}
+            />
+            <DateTimeInputField
+              label="Auction end date and time"
+              name="auctionEnd"
+              control={control}
+              dateFormat="dd MMMM yyyy hh:mm"
+              showTimeSelect
+              rules={{ required: "Auction end date is required" }}
+            />
+          </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <InputField
-          label="Reserve price"
-          name="reservePrice"
-          type="number"
-          control={control}
-        />
-        <DateTimeInputField
-          label="Auction end date and time"
-          name="auctionEnd"
-          control={control}
-          dateFormat='dd MMMM yyyy hh:mm'
-          showTimeSelect
-          rules={{ required: "Auction end date is required" }}
-        />
-      </div>
-
-      <InputField
-        label="Image url"
-        name="imageUrl"
-        control={control}
-        rules={{ required: "Image url is required" }}
-      />
+          <InputField
+            label="Image url"
+            name="imageUrl"
+            control={control}
+            rules={{ required: "Image url is required" }}
+          />
+        </>
+      )}
 
       <div className="flex justify-between ">
         <Button outline color="gray">

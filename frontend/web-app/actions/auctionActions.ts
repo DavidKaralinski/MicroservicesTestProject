@@ -1,12 +1,13 @@
 "use client";
 
 import { Auction, PaginatedResponse } from "@/types";
-import { httpGet, httpPut, httpPost } from "./httpActions";
+import { httpGet, httpPut, httpPost, invalidatePath, httpDelete } from "./httpActions";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParamsStore } from "@/hooks/useSearchParamsStore";
 import qs from "query-string";
 import { applicationUrls } from "@/common/appConfiguration";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export const useGetAuctions = () => {
   const [response, setResponse] = useState<
@@ -77,6 +78,8 @@ export const useUpdateAuction = () => {
 
     httpPut(url, data, true)
       .then((r) => {
+        invalidatePath('/');
+        invalidatePath(`auctions/details/${data.id}`);
         setIsUpdating(false);
         toast.success('Auction updated');
       })
@@ -89,6 +92,31 @@ export const useUpdateAuction = () => {
   return { update, isUpdating };
 };
 
+export const useDeleteAuction = () => {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  const deleteAuction = (id: string) => {
+    setIsDeleting(true);
+    const url = `${applicationUrls.gatewayUrl}/auctions/${id}`;
+
+    httpDelete(url, true)
+      .then((r) => {
+        invalidatePath('/');
+        invalidatePath(`auctions/details/${id}`);
+        setIsDeleting(false);
+        toast.success('Auction deleted');
+        router.push('/');
+      })
+      .catch((error) => {
+        setIsDeleting(false);
+        toast.error(error.message);
+      });
+  };
+
+  return { deleteAuction, isDeleting };
+};
+
 export const useCreateAuction = () => {
   const [response, setResponse] = useState<Auction | undefined>(undefined);
   const [isCreating, setIsCreating] = useState(false);
@@ -98,6 +126,7 @@ export const useCreateAuction = () => {
     const url = `${applicationUrls.gatewayUrl}/auctions`;
 
     httpPost<Auction>(url, data, true).then((r) => {
+      invalidatePath('/');
       setIsCreating(false);
       setResponse(r);
       toast.success('Auction created');

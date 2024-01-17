@@ -12,12 +12,14 @@ type State = {
     filterBy: string
     seller?: string
     winner?: string
+    invalidateObject: any;
 }
 
 type Actions = {
     setParams: (params: Partial<State>) => void
     reset: () => void
     setSearchValue: (value: string | null) => void
+    invalidate: () => void
 }
 
 const initialState: State = {
@@ -30,6 +32,7 @@ const initialState: State = {
     filterBy: 'live',
     seller: undefined,
     winner: undefined,
+    invalidateObject: undefined,
 }
 
 export const useSearchParamsStore = create<State & Actions>()((set) => ({
@@ -57,5 +60,9 @@ export const useSearchParamsStore = create<State & Actions>()((set) => ({
 
     setSearchValue: (value: string | null) => {
         set({searchTerm: value})
+    },
+
+    invalidate: () => {
+        set({invalidateObject: new Object()});
     }
 }))
