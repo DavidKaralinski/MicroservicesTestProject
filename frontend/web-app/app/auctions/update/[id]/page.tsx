@@ -2,20 +2,25 @@
 
 import { useGetAuctionById, useUpdateAuction } from '@/actions/auctionActions'
 import Heading from '@/app/components/Heading';
-import React from 'react'
+import React, { useEffect } from 'react'
 import AuctionForm from '../../AuctionForm';
 import { Auction } from '@/types';
 import { useRouter } from 'next/navigation';
 
 export default function UpdateAuctionPage({params}: {params: {id: string}}) {
   const { response: auction, isLoading } = useGetAuctionById(params.id);
-  const { update, isUpdating } = useUpdateAuction();
+  const { update, isUpdating, response } = useUpdateAuction();
   const router = useRouter();
 
   const onSubmit = (data: Auction) => {
     update(data);
-    router.push(`../details/${data.id}`);
   }
+
+  useEffect(() => {
+    if(response === true){
+      router.push(`../details/${params.id}`);
+    }
+  },  [response]);
 
   if(isLoading){
     return <>Loading</>;

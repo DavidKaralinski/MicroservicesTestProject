@@ -71,6 +71,7 @@ export const useGetAuctionById = (id: string) => {
 
 export const useUpdateAuction = () => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [response, setResponse] = useState(false);
 
   const update = (data: Partial<Auction>) => {
     setIsUpdating(true);
@@ -79,8 +80,9 @@ export const useUpdateAuction = () => {
     httpPut(url, data, true)
       .then((r) => {
         invalidatePath('/');
-        invalidatePath(`auctions/details/${data.id}`);
+        invalidatePath(`/auctions/details/${data.id}`);
         setIsUpdating(false);
+        setResponse(true);
         toast.success('Auction updated');
       })
       .catch((error) => {
@@ -89,12 +91,12 @@ export const useUpdateAuction = () => {
       });
   };
 
-  return { update, isUpdating };
+  return { update, isUpdating, response };
 };
 
 export const useDeleteAuction = () => {
   const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
+  const [response, setResponse] = useState(false);
 
   const deleteAuction = (id: string) => {
     setIsDeleting(true);
@@ -103,10 +105,10 @@ export const useDeleteAuction = () => {
     httpDelete(url, true)
       .then((r) => {
         invalidatePath('/');
-        invalidatePath(`auctions/details/${id}`);
+        invalidatePath(`/auctions/details/${id}`);
         setIsDeleting(false);
+        setResponse(true);
         toast.success('Auction deleted');
-        router.push('/');
       })
       .catch((error) => {
         setIsDeleting(false);
@@ -114,7 +116,7 @@ export const useDeleteAuction = () => {
       });
   };
 
-  return { deleteAuction, isDeleting };
+  return { deleteAuction, isDeleting, response };
 };
 
 export const useCreateAuction = () => {

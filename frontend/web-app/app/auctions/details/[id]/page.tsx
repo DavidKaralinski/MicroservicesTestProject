@@ -2,7 +2,7 @@
 
 import { useDeleteAuction, useGetAuctionById } from '@/actions/auctionActions'
 import Heading from '@/app/components/Heading';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CountdownTimer } from '../../CountdownTimer';
 import CarImage from '../../CarImage';
 import AuctionDetails from './AuctionDetails';
@@ -11,8 +11,14 @@ import { Button } from 'flowbite-react';
 
 export default function AuctionDetailsPage({params}: {params: {id: string}}) {
   const { response: auction, isLoading } = useGetAuctionById(params.id);
-  const { deleteAuction, isDeleting } = useDeleteAuction();
+  const { deleteAuction, isDeleting, response } = useDeleteAuction();
   const router = useRouter();
+
+  useEffect(() => {
+    if(response == true){
+      router.push('/');
+    }
+  },  [response]);
 
   if(isLoading || !auction){
     return <>Loading</>;

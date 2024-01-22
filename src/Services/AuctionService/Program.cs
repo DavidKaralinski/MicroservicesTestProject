@@ -1,5 +1,7 @@
 using AuctionService;
 using AuctionService.Data;
+using AuctionService.Grpc;
+using AuctionService.IntegrationEvents.Consumers;
 using IntegrationEvents.Events;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ builder.Services.AddDbContext<AuctionDbContext>(opt =>
 );
 
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,6 +26,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddMassTransit(x => 
 {
+    x.AddConsumer<BidPlacedEventConsumer>();
+    x.AddConsumer<AuctionFinishedEventConsumer>();
+
     x.AddEntityFrameworkOutbox<AuctionDbContext>(o =>
     {
         o.QueryDelay = TimeSpan.FromSeconds(10);
@@ -41,8 +47,20 @@ builder.Services.AddMassTransit(x =>
         cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
         cfg.Message<AuctionUpdatedEvent>(m => m.SetEntityName("auction-updated"));
         cfg.Message<AuctionDeletedEvent>(m => m.SetEntityName("auction-deleted"));
+        cfg.Message<AuctionFinishedEvent>(m => m.SetEntityName("auction-finished"));
+        cfg.Message<BidPlacedEvent>(m => m.SetEntityName("bid-placed"));
 
-        cfg.ConfigureEndpoints(context);
+        cfg.ReceiveEndpoint("auctions-auction-finished", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<AuctionFinishedEventConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("auctions-bid-placed", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<BidPlacedEventConsumer>(context);
+        });
     });
 });
 
@@ -68,14 +86,7 @@ if(app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGrpcService<AuctionsGrpcService>();
 app.MapControllers();
 
 app.Run();
-
-class EnvironmentNameFormatter : IEntityNameFormatter
-    {
-        public string FormatEntityName<T>()
-        {
-            return typeof(T).Name;
-        }
-    }
