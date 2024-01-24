@@ -39,8 +39,21 @@ services:
       dockerfile: ./src/Services/AuctionService/Dockerfile
     ports:
       - 7001:80
+      - 7777:7777
     env_file:
       - ./src/Services/AuctionService/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+  bid-svc:
+    image: karalinskidavid/microservicestestproject/bid-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/BidService/Dockerfile
+    ports:
+      - 7003:80
+    env_file:
+      - ./src/Services/BidService/.env
     depends_on:
       - postgres
       - rabbitmq

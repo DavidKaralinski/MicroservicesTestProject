@@ -14,7 +14,10 @@ public class AuctionServiceMappingProfile : Profile
         CreateMap<Auction, AuctionCreatedEvent>().IncludeMembers(x => x.Item);
         CreateMap<AuctionItem, AuctionCreatedEvent>();
 
-        CreateMap<Auction, AuctionUpdatedEvent>().IncludeMembers(x => x.Item);
+        CreateMap<Auction, AuctionUpdatedEvent>()
+            .ForMember(dst => dst.Status, opt => opt.MapFrom(src => Enum.GetName(src.Status)))
+            .IncludeMembers(x => x.Item);
+
         CreateMap<AuctionItem, AuctionUpdatedEvent>();
     }
 }

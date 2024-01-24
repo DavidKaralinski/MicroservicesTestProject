@@ -16,6 +16,9 @@ public class AuctionUpdatedEventConsumer : IConsumer<AuctionUpdatedEvent>
             .Modify(e => e.Make, context.Message.Make)
             .Modify(e => e.Mileage, context.Message.Mileage)
             .Modify(e => e.Year, context.Message.Year)
+            .Modify(e => e.Winner, context.Message.Winner)
+            .Modify(e => e.SoldAmount, context.Message.SoldAmount)
+            .Modify(e => e.Status, context.Message.Status)
             .ExecuteAsync();
     }
 }

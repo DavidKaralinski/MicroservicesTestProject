@@ -9,13 +9,12 @@ COPY /src/Services/IdentityService/IdentityService.csproj /src/Services/Identity
 COPY /src/Services/GatewayService/GatewayService.csproj /src/Services/GatewayService/GatewayService.csproj
 COPY /src/Services/SearchService/SearchService.csproj /src/Services/SearchService/SearchService.csproj
 COPY /src/Services/BidService/BidService.csproj /src/Services/BidService/BidService.csproj
-RUN dotnet restore 
+RUN dotnet restore
 
-COPY /src/Services/GatewayService /src/Services/GatewayService
-WORKDIR /src/Services/GatewayService
-RUN dotnet publish -c Release -o /app
+COPY /src/Services/BidService /src/Services/BidService
+WORKDIR /src/Services/BidService
+RUN dotnet publish -c Release -o /app 
 
 FROM base AS final
-WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["dotnet", "GatewayService.dll"]
+ENTRYPOINT [ "dotnet", "BidService.dll" ]
