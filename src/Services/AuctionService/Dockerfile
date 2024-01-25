@@ -10,6 +10,7 @@ COPY /src/Services/GatewayService/GatewayService.csproj /src/Services/GatewaySer
 COPY /src/Services/SearchService/SearchService.csproj /src/Services/SearchService/SearchService.csproj
 COPY /src/Services/IdentityService/IdentityService.csproj /src/Services/IdentityService/IdentityService.csproj
 COPY /src/Services/BidService/BidService.csproj /src/Services/BidService/BidService.csproj
+COPY /src/Services/NotificationService/NotificationService.csproj /src/Services/NotificationService/NotificationService.csproj
 RUN dotnet restore 
 
 COPY /src/Services/AuctionService /src/Services/AuctionService

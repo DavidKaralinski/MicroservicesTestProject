@@ -44,8 +44,8 @@ public class BidPlacedEventConsumer : IConsumer<BidPlacedEvent>
                 return;
             }
 
-            if (context.Message.BidStatus == Enums.BidStatus.Accepted ||
-                context.Message.BidStatus == Enums.BidStatus.AcceptedBelowReserve)
+            if (context.Message.BidStatus == Enum.GetName(Enums.BidStatus.Accepted) ||
+                context.Message.BidStatus == Enum.GetName(Enums.BidStatus.AcceptedBelowReserve))
             {
                 auction.CurrentHighBid = auction.CurrentHighBid.GetValueOrDefault(0) < context.Message.BidAmount ?
                      context.Message.BidAmount :

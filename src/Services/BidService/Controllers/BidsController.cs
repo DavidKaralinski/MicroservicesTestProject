@@ -97,13 +97,19 @@ public class BidsController : ControllerBase
                  BidStatus.Accepted :
                  auction.ReservePrice > amount ? BidStatus.AcceptedBelowReserve : BidStatus.TooLow;
 
-                highestBid.Status = BidStatus.TooLow;
+                highestBid.Status = amount >= highestBid.Amount ? BidStatus.TooLow : highestBid.Status;
             }
 
             bid.Status = amount > auction.ReservePrice ? BidStatus.Accepted : BidStatus.AcceptedBelowReserve;
+
+            if(highestBid?.Status == BidStatus.TooLow)
+            {
+                await _publishEndpoint.Publish(new AcceptedBidStatusChangedEvent(auctionId,
+                     highestBid.BidderName, highestBid.BidTime, highestBid.Amount, Enum.GetName(highestBid.Status)!));
+            }
         }
 
-         _dbContext.Add(bid);
+        _dbContext.Add(bid);
         await _dbContext.SaveChangesAsync(cancellationToken);
         await _publishEndpoint.Publish(_mapper.Map<Bid, BidPlacedEvent>(bid));
 

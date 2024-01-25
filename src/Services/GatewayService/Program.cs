@@ -15,6 +15,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         opt.RequireHttpsMetadata = false;
     });
 
+builder.Services.AddCors(opt => {
+    opt.AddPolicy("corsPolicy", b => {
+        b.AllowAnyHeader().AllowAnyMethod().WithOrigins(configuration["ClientAppUrl"] ?? "");
+    });
+});
+
 var app = builder.Build();
 
 app.MapReverseProxy();

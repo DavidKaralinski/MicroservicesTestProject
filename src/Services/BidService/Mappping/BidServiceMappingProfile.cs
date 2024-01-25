@@ -14,7 +14,7 @@ public class BidServiceMappingProfile : Profile
 
         CreateMap<Bid, BidPlacedEvent>()
             .ForCtorParam(nameof(BidPlacedEvent.AuctionId), opt => opt.MapFrom(src => src.AuctionId))
-            .ForCtorParam(nameof(BidPlacedEvent.BidStatus), opt => opt.MapFrom(src => src.Status))
+            .ForCtorParam(nameof(BidPlacedEvent.BidStatus), opt => opt.MapFrom(src => Enum.GetName(src.Status)))
             .ForCtorParam(nameof(BidPlacedEvent.BidderName), opt => opt.MapFrom(src => src.BidderName))
             .ForCtorParam(nameof(BidPlacedEvent.BidTime), opt => opt.MapFrom(src => src.BidTime))
             .ForCtorParam(nameof(BidPlacedEvent.BidAmount), opt => opt.MapFrom(src => src.Amount));

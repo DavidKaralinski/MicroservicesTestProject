@@ -31,6 +31,7 @@ builder.Services.AddMassTransit(x =>
         cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
         cfg.Message<AuctionFinishedEvent>(m => m.SetEntityName("auction-finished"));
         cfg.Message<BidPlacedEvent>(m => m.SetEntityName("bid-placed"));
+        cfg.Message<AcceptedBidStatusChangedEvent>(m => m.SetEntityName("accepted-bid-status-changed"));
 
         cfg.ReceiveEndpoint("bids-auction-created", e => 
         {
