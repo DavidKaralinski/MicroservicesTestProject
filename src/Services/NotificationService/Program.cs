@@ -11,6 +11,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<BidPlacedEventConsumer>();
     x.AddConsumer<AuctionFinishedEventConsumer>();
     x.AddConsumer<AuctionCreatedEventConsumer>();
+    x.AddConsumer<AuctionDeletedEventConsumer>();
     x.AddConsumer<AcceptedBidStatusChangedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) => 
@@ -40,6 +41,12 @@ builder.Services.AddMassTransit(x =>
             e.ConfigureConsumer<AuctionCreatedEventConsumer>(context);
         });
 
+        cfg.ReceiveEndpoint("notifications-auction-deleted", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<AuctionDeletedEventConsumer>(context);
+        });
+
         cfg.ReceiveEndpoint("notifications-bid-placed", e => 
         {
             e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
@@ -53,6 +60,8 @@ builder.Services.AddMassTransit(x =>
         });
     });
 });
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 

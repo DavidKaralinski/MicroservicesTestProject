@@ -8,11 +8,14 @@ import CarImage from '../../CarImage';
 import AuctionDetails from './AuctionDetails';
 import { useRouter } from 'next/navigation';
 import { Button } from 'flowbite-react';
+import BidsList from './BidsList';
+import { useGetCurrentUser } from '@/actions/bidActions';
 
 export default function AuctionDetailsPage({params}: {params: {id: string}}) {
   const { response: auction, isLoading } = useGetAuctionById(params.id);
   const { deleteAuction, isDeleting, response } = useDeleteAuction();
   const router = useRouter();
+  const { currentUser, isLoading: isCurrentUserLoading } = useGetCurrentUser();
 
   useEffect(() => {
     if(response == true){
@@ -20,7 +23,7 @@ export default function AuctionDetailsPage({params}: {params: {id: string}}) {
     }
   },  [response]);
 
-  if(isLoading || !auction){
+  if(isLoading || !auction || isCurrentUserLoading){
     return <>Loading</>;
   }
 
@@ -29,8 +32,10 @@ export default function AuctionDetailsPage({params}: {params: {id: string}}) {
       <div className="flex justify-between">
         <div className='flex items-center gap-2'>
           <Heading title={auction?.make + " " + auction.model} />
-          {<Button onClick={() => router.push(`/auctions/update/${auction.id}`)} outline>Update</Button>}
-          {<Button isProcessing={isDeleting} color='failure' onClick={() => {
+          {auction.sellerName === currentUser?.username && 
+           <Button onClick={() => router.push(`/auctions/update/${auction.id}`)} outline>Update</Button>}
+          {auction.sellerName === currentUser?.username && 
+          <Button isProcessing={isDeleting} color='failure' onClick={() => {
             deleteAuction(auction.id);
           }} outline>Delete</Button>}
         </div>
@@ -45,9 +50,7 @@ export default function AuctionDetailsPage({params}: {params: {id: string}}) {
           <CarImage imageUrl={auction.imageUrl} />
         </div>
 
-        <div className="border-2 rounded-lg p-2 bg-gray-100">
-          <Heading title="Bids" />
-        </div>
+        <BidsList user={currentUser} auction={auction} />
       </div>
 
       <div className='mt-3 grid grid-cols-1 rounded-lg'>

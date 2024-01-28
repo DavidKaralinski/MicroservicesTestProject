@@ -57,7 +57,7 @@ public class AuctionsController : ControllerBase
         var item = new Auction()
         {
             AuctionEnd = auctionDto.AuctionEnd,
-            ReservePrice = auctionDto.ReservePrice,
+            ReservePrice = auctionDto.ReservePrice ?? 0,
             SellerName = User.Identity.Name,
             Item = new AuctionItem()
             {

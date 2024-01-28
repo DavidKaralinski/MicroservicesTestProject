@@ -80,7 +80,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
       - IdentityServiceUrl=http://identity-svc
-      - ClientAppUrl=http://web-app
+      - ClientAppUrl=http://localhost:3000
   notification-svc:
     image: karalinskidavid/microservicestestproject/notification-svc:latest
     build: 
@@ -88,9 +88,8 @@ services:
       dockerfile: ./src/Services/NotificationService/Dockerfile
     ports:
       - 7004:80
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Docker
-      - ASPNETCORE_URLS=http://+:80
+    env_file:
+      - ./src/Services/NotificationService/.env
     depends_on:
       - rabbitmq
 volumes:

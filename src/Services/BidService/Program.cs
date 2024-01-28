@@ -19,6 +19,7 @@ builder.Services.AddDbContext<BidDbContext>(opt =>
 builder.Services.AddMassTransit(x => 
 {
     x.AddConsumer<AuctionCreatedEventConsumer>();
+    x.AddConsumer<AuctionDeletedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) => 
     {
@@ -29,6 +30,7 @@ builder.Services.AddMassTransit(x =>
         });
 
         cfg.Message<AuctionCreatedEvent>(m => m.SetEntityName("auction-created"));
+        cfg.Message<AuctionDeletedEvent>(m => m.SetEntityName("auction-deleted"));
         cfg.Message<AuctionFinishedEvent>(m => m.SetEntityName("auction-finished"));
         cfg.Message<BidPlacedEvent>(m => m.SetEntityName("bid-placed"));
         cfg.Message<AcceptedBidStatusChangedEvent>(m => m.SetEntityName("accepted-bid-status-changed"));
@@ -37,6 +39,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
             e.ConfigureConsumer<AuctionCreatedEventConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("bid-auction-deleted", e => 
+        {
+            e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10)));
+            e.ConfigureConsumer<AuctionDeletedEventConsumer>(context);
         });
     });
 });

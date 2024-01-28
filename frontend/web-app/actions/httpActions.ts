@@ -7,7 +7,7 @@ export const httpGet = async<T>(url: string, needsAuthorization?: boolean) => {
     const requestOptions = {
         headers: {
             'Content-type': 'application/json',
-            'Authorization': needsAuthorization ? `Bearer ${await getTokenWorkaround()}` : 'None'
+            'Authorization': needsAuthorization ? `Bearer ${(await getTokenWorkaround())?.access_token}` : 'None'
         },
         method: 'GET'
     };

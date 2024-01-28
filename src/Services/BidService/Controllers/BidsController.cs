@@ -57,14 +57,14 @@ public class BidsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<BidModel>> PlaceBid([FromQuery] string auctionId, [FromQuery] int amount, CancellationToken cancellationToken)
+    public async Task<ActionResult<BidModel>> PlaceBid([FromBody] PlaceBidRequestModel request, CancellationToken cancellationToken)
     {
-        var auction = await _dbContext.Auctions.FirstOrDefaultAsync(x => x.Id == auctionId, cancellationToken) ?? 
-        await _auctionsGrpcService.GetAuctionByIdAsync(auctionId, cancellationToken);
+        var auction = await _dbContext.Auctions.FirstOrDefaultAsync(x => x.Id == request.AuctionId, cancellationToken) ?? 
+        await _auctionsGrpcService.GetAuctionByIdAsync(request.AuctionId, cancellationToken);
 
         if (auction is null)
         {
-            _logger.LogError("Cannot find the auction with the provided id = {auctionId}", auctionId);
+            _logger.LogError("Cannot find the auction with the provided id = {auctionId}", request.AuctionId);
             return NotFound();
         }
 
@@ -76,8 +76,8 @@ public class BidsController : ControllerBase
 
         var bid = new Bid()
         {
-            Amount = amount,
-            AuctionId = auctionId,
+            Amount = request.Amount,
+            AuctionId = request.AuctionId,
             BidderName = User.Identity?.Name ?? "",
             BidTime = DateTime.UtcNow
         };
@@ -89,22 +89,22 @@ public class BidsController : ControllerBase
         else
         {
             var highestBid = await _dbContext.Bids.OrderByDescending(x => x.Amount)
-            .FirstOrDefaultAsync(x => x.AuctionId == auctionId);
+            .FirstOrDefaultAsync(x => x.AuctionId == request.AuctionId);
 
             if (highestBid is not null)
             {
-                bid.Status = amount > auction.ReservePrice && amount > highestBid.Amount ?
+                bid.Status = request.Amount > auction.ReservePrice && request.Amount > highestBid.Amount ?
                  BidStatus.Accepted :
-                 auction.ReservePrice > amount ? BidStatus.AcceptedBelowReserve : BidStatus.TooLow;
+                 auction.ReservePrice > request.Amount ? BidStatus.AcceptedBelowReserve : BidStatus.TooLow;
 
-                highestBid.Status = amount >= highestBid.Amount ? BidStatus.TooLow : highestBid.Status;
+                highestBid.Status = request.Amount >= highestBid.Amount ? BidStatus.TooLow : highestBid.Status;
             }
 
-            bid.Status = amount > auction.ReservePrice ? BidStatus.Accepted : BidStatus.AcceptedBelowReserve;
+            bid.Status = request.Amount > auction.ReservePrice ? BidStatus.Accepted : BidStatus.AcceptedBelowReserve;
 
             if(highestBid?.Status == BidStatus.TooLow)
             {
-                await _publishEndpoint.Publish(new AcceptedBidStatusChangedEvent(auctionId,
+                await _publishEndpoint.Publish(new AcceptedBidStatusChangedEvent(highestBid.Id, request.AuctionId,
                      highestBid.BidderName, highestBid.BidTime, highestBid.Amount, Enum.GetName(highestBid.Status)!));
             }
         }

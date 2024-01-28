@@ -17,11 +17,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddCors(opt => {
     opt.AddPolicy("corsPolicy", b => {
-        b.AllowAnyHeader().AllowAnyMethod().WithOrigins(configuration["ClientAppUrl"] ?? "");
+        b.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(configuration["ClientAppUrl"] ?? "");
     });
 });
 
 var app = builder.Build();
+
+app.UseCors();
 
 app.MapReverseProxy();
 

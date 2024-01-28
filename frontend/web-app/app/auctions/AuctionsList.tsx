@@ -1,20 +1,15 @@
 "use client";
 
 import { AuctionCard } from "./AuctionCard";
-import { applicationUrls } from "../../common/appConfiguration";
-import { Auction, PaginatedResponse } from "../../types";
 import AppPagination from "../components/AppPagination";
 import { useGetAuctions } from "../../actions/auctionActions";
 import { useEffect, useMemo, useState } from "react";
 import AuctionFilters from "./AuctionFilters";
 import { useSearchParamsStore } from "../../hooks/useSearchParamsStore";
 import EmptyFilterResults from "../components/EmptyFilterResults";
-import { Spinner } from "flowbite-react";
-import qs from 'query-string';
+import { useAuctionsStore } from "@/hooks/useAuctionsStore";
 
 export const AuctionsList = () => {
-   const [auctions, setAuctions] = useState<Auction[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
 
   const params = useSearchParamsStore(state => ({
     pageNumber: state.pageNumber,
@@ -26,16 +21,15 @@ export const AuctionsList = () => {
     seller: state.seller
   }));
 
-  const setParams = useSearchParamsStore(state => state.setParams);
 
-  const url = useMemo(() => {
-    return qs.stringifyUrl({url: `${applicationUrls.gatewayUrl}/search/AuctionItems`, query: params})
-  }, [params]);
+  const setAuctions = useAuctionsStore(state => state.setData);
+  const auctions = useAuctionsStore(state => state.auctions);
+  const setParams = useSearchParamsStore(state => state.setParams);
 
   const { response, isLoading } = useGetAuctions();
 
   useEffect(() => {
-    setAuctions(response?.results ?? []);
+    setAuctions(response);
     setParams({ pageCount: response?.pageCount });
   }, [response]);
 
@@ -50,7 +44,7 @@ export const AuctionsList = () => {
   //   });
   // }, [url]);
 
-  if(isLoading){
+  if(isLoading || !auctions){
     return <>Loading</>
   }
 

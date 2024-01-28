@@ -19,6 +19,7 @@ public class AuctionUpdatedEventConsumer : IConsumer<AuctionUpdatedEvent>
             .Modify(e => e.Winner, context.Message.Winner)
             .Modify(e => e.SoldAmount, context.Message.SoldAmount)
             .Modify(e => e.Status, context.Message.Status)
+            .Modify(e => e.CurrentHighBid, context.Message.CurrentHighBid)
             .ExecuteAsync();
     }
 }

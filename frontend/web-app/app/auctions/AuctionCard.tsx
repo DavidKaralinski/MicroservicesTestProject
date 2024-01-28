@@ -2,6 +2,7 @@ import { CountdownTimer } from "./CountdownTimer";
 import CarImage from "./CarImage";
 import { Auction } from "../../types";
 import Link from "next/link";
+import { CurrentBidInfo } from "./CurrentBidInfo";
 
 type AuctionCardProps = {
     auction: Auction;
@@ -16,6 +17,11 @@ export const AuctionCard = (props: AuctionCardProps) => {
                     <CarImage imageUrl={props.auction.imageUrl}/>
                     <div className='absolute bottom-2 left-2'>
                         <CountdownTimer endDate={props.auction.auctionEnd}/>
+                    </div>
+                    <div className='absolute top-2 right-2'>
+                        <CurrentBidInfo 
+                            reservePrice={props.auction.reservePrice} 
+                            amount={props.auction.currentHighBid} />
                     </div>
                 </div>
             </div>
