@@ -32,7 +32,7 @@ export default function BidForm({ auctionId, highestBid }: Props) {
         if(response){
             addBid(response);
         }
-    }, [response]);
+    }, [response, addBid]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='flex items-center border-2 rounded-lg py-2'>

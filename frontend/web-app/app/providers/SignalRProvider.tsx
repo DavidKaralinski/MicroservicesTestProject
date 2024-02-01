@@ -24,17 +24,19 @@ export default function SignalRProvider({ children, user }: Props) {
   const { setCurrentPrice, removeAuction, auctions } = useAuctionsStore();
   const { addBid, updateBidStatus } = useBidsStore();
 
+  const url = process.env.NODE_ENV === 'production' ? 'api.testproject.com' : process.env.NEXT_PUBLIC_NOTIFICATIONS_URL!;
+
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl(`${applicationUrls.gatewayUrl}/notifications`)
+      .withUrl(url)
       .withAutomaticReconnect()
       .build();
 
     setConnection(newConnection);
-  }, [applicationUrls.gatewayUrl]);
+  }, []);
 
   useEffect(() => {
-    if (!connection) {
+    if (!connection || !user) {
       return;
     }
 
@@ -81,7 +83,7 @@ export default function SignalRProvider({ children, user }: Props) {
     return () => {
       connection?.stop();
     };
-  }, [connection, updateBidStatus, removeAuction, setCurrentPrice]);
+  }, [connection, updateBidStatus, removeAuction, setCurrentPrice, addBid, user]);
 
   return children;
 }

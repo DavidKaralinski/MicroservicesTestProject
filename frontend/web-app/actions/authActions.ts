@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import {cookies, headers} from 'next/headers';
 import { NextApiRequest } from "next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 export const getCurrentSession = async () => {
     return await getServerSession(authOptions);

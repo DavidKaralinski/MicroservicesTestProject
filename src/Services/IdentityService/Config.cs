@@ -17,7 +17,7 @@ public static class Config
             new ApiScope("auctionService", "Auction service full access"),
         };
 
-    public static IEnumerable<Client> Clients =>
+    public static IEnumerable<Client> Clients(IConfiguration configuration) =>
         new Client[]
         {
             new() 
@@ -36,7 +36,7 @@ public static class Config
                 ClientSecrets = new [] { new Secret("Secret".Sha256()) },
                 AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
                 RequirePkce = false,
-                RedirectUris = new [] { "http://localhost:3000/api/auth/callback/id-server" },
+                RedirectUris = new [] { $"{configuration.GetValue<string>("ClientAppUrl")}/api/auth/callback/id-server" },
                 AllowOfflineAccess = true,
                 AllowedScopes = new [] { "openid", "profile", "auctionService" },
                 AccessTokenLifetime = 3600*24,

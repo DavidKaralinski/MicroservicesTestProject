@@ -1,6 +1,6 @@
 'use client'
 
-import { updateAuctionTest, useUpdateAuction } from "@/actions/auctionActions";
+import { useUpdateAuction } from "@/actions/auctionActions";
 import { Button } from "flowbite-react";
 import React, { useState } from "react";
 

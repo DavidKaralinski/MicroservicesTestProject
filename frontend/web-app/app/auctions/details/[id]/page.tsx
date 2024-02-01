@@ -21,7 +21,7 @@ export default function AuctionDetailsPage({params}: {params: {id: string}}) {
     if(response == true){
       router.push('/');
     }
-  },  [response]);
+  },  [response, router]);
 
   if(isLoading || !auction || isCurrentUserLoading){
     return <>Loading</>;

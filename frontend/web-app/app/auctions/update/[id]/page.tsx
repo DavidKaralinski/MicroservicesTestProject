@@ -20,7 +20,7 @@ export default function UpdateAuctionPage({params}: {params: {id: string}}) {
     if(response === true){
       router.push(`../details/${params.id}`);
     }
-  },  [response]);
+  },  [response, params.id, router]);
 
   if(isLoading){
     return <>Loading</>;

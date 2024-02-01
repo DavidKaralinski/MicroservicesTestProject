@@ -31,7 +31,7 @@ export default function BidsList({ user, auction }: Props) {
 
     useEffect(() => {
         setBids(bidsData);
-    }, [bidsData]);
+    }, [bidsData, setBids]);
 
     const highestBid = bids?.reduce((prev, current) => prev > current.amount
         ? prev

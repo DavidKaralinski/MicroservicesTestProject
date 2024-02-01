@@ -31,7 +31,7 @@ export const AuctionsList = () => {
   useEffect(() => {
     setAuctions(response);
     setParams({ pageCount: response?.pageCount });
-  }, [response]);
+  }, [response, setAuctions, setParams]);
 
 
   // useEffect(() => {

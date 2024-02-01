@@ -1,3 +1,3 @@
 export const applicationUrls = {
-    gatewayUrl: "http://localhost:6001"
+    gatewayUrl: process.env.NEXT_PUBLIC_API_URL
 }

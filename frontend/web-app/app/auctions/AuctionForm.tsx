@@ -27,7 +27,7 @@ export default function AuctionForm(props: AuctionFormProps) {
       reset({...props.data});
     }
     setFocus("make");
-  }, [setFocus, props.data]);
+  }, [setFocus, props.data, reset]);
 
   const onSubmit = (data: FieldArray) => {
     props.onSubmit(data as Auction);
