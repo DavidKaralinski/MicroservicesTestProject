@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { getTokenWorkaround } from "./authActions";
 
+const apiUrl = process.env.API_URL;
+
 export const httpGet = async<T>(url: string, needsAuthorization?: boolean) => {
     const requestOptions = {
         headers: {
@@ -12,7 +14,7 @@ export const httpGet = async<T>(url: string, needsAuthorization?: boolean) => {
         method: 'GET'
     };
 
-    const res = await fetch(url, requestOptions);
+    const res = await fetch(apiUrl + url, requestOptions);
 
     if(!res.ok) throw new Error(res.statusText);
 
@@ -29,7 +31,7 @@ export const httpPut = async(url: string, data: any, needsAuthorization?: boolea
         body: JSON.stringify(data)
     };
 
-    const res = await fetch(url, requestOptions);
+    const res = await fetch(apiUrl + url, requestOptions);
     if(!res.ok) throw new Error(res.statusText);
 
     return;
@@ -45,7 +47,7 @@ export const httpPost = async<T>(url: string, data: T, needsAuthorization?: bool
         body: JSON.stringify(data)
     };
 
-    const res = await fetch(url, requestOptions);
+    const res = await fetch(apiUrl + url, requestOptions);
 
     if(!res.ok) throw new Error(res.statusText);
 
@@ -61,7 +63,7 @@ export const httpDelete = async(url: string, needsAuthorization?: boolean) => {
         method: 'DELETE',
     };
 
-    const res = await fetch(url, requestOptions);
+    const res = await fetch(apiUrl + url, requestOptions);
 
     if(!res.ok) throw new Error(res.statusText);
 

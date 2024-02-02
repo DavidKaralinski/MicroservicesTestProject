@@ -1,6 +1,5 @@
 "use client";
 
-import { applicationUrls } from "@/common/appConfiguration";
 import { useAuctionsStore } from "@/hooks/useAuctionsStore";
 import { useBidsStore } from "@/hooks/useBidsStore";
 import { AcceptedBidStatusChangedNotification, Auction, AuctionDeletedNotification, AuctionFinishedNotification, Bid, BidPlacedNotification, BidStatus } from "@/types";
@@ -24,7 +23,7 @@ export default function SignalRProvider({ children, user }: Props) {
   const { setCurrentPrice, removeAuction, auctions } = useAuctionsStore();
   const { addBid, updateBidStatus } = useBidsStore();
 
-  const url = process.env.NODE_ENV === 'production' ? 'api.testproject.com' : process.env.NEXT_PUBLIC_NOTIFICATIONS_URL!;
+  const url = process.env.NODE_ENV === 'production' ? 'https://api.testproject.com/notifications' : process.env.NEXT_PUBLIC_NOTIFICATIONS_URL!;
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()

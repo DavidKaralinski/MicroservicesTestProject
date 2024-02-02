@@ -1,0 +1,147 @@
+networks:
+  testproject:
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgrespw
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      testproject:
+  mongodb:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mongopwd 
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/var/lib/mongodb/data
+    networks:
+      testproject:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15673:15672
+    networks:
+      testproject:
+  identity-svc:
+    image: karalinskidavid/microservicestestproject/identity-svc:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/IdentityService/Dockerfile
+    env_file:
+      - ./src/Services/IdentityService/.env
+    depends_on:
+      - postgres
+    networks:
+      testproject:
+        ipv4_address: 10.5.0.200
+  auction-svc:
+    image: karalinskidavid/microservicestestproject/auction-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/AuctionService/Dockerfile
+    ports:
+      - 7001:80
+      - 7777:7777
+    env_file:
+      - ./src/Services/AuctionService/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      testproject:
+  bid-svc:
+    image: karalinskidavid/microservicestestproject/bid-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/BidService/Dockerfile
+    ports:
+      - 7003:80
+    env_file:
+      - ./src/Services/BidService/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      testproject:
+  search-svc:
+    image: karalinskidavid/microservicestestproject/search-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/SearchService/Dockerfile
+    ports:
+      - 7002:80
+    env_file:
+      - ./src/Services/SearchService/.env
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      testproject:
+  gateway-svc:
+    image: karalinskidavid/microservicestestproject/gateway-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/GatewayService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - IdentityServiceUrl=http://identity-svc
+      - ClientAppUrl=https://app.testproject.com
+      - VIRTUAL_HOST=api.testproject.com
+    networks:
+      testproject:
+  notification-svc:
+    image: karalinskidavid/microservicestestproject/notification-svc:latest
+    build: 
+      context: .
+      dockerfile: ./src/Services/NotificationService/Dockerfile
+    ports:
+      - 7004:80
+    env_file:
+      - ./src/Services/NotificationService/.env
+    depends_on:
+      - rabbitmq
+    networks:
+      testproject:
+  web-app:
+    image: karalinskidavid/microservicestestproject/web-app:latest
+    build: 
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
+    extra_hosts:
+      - id.testproject.com:10.5.0.200
+    environment:
+      - NEXTAUTH_SECRET=secretsecret
+      - NEXTAUTH_URL=http://app.testproject.com
+      - NEXTAUTH_URL_INTERNAL=http://web-app:3000
+      - API_URL=http://gateway-svc
+      - AUTH_URL=http://id.testproject.com
+      - NEXT_PUBLIC_NOTIFY_URL=http://gateway-svc/notifications
+      - VIRTUAL_HOST=app.testproject.com
+      - VIRTUAL_PORT=3000
+    networks:
+      testproject:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      testproject:
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./devcerts:/etc/nginx/certs
+volumes:
+  pgdata:
+  mongodata:

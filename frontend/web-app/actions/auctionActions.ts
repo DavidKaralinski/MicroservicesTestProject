@@ -5,9 +5,7 @@ import { httpGet, httpPut, httpPost, invalidatePath, httpDelete } from "./httpAc
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParamsStore } from "@/hooks/useSearchParamsStore";
 import qs from "query-string";
-import { applicationUrls } from "@/common/appConfiguration";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 export const useGetAuctions = () => {
   const [response, setResponse] = useState<
@@ -27,7 +25,7 @@ export const useGetAuctions = () => {
 
   const url = useMemo(() => {
     return qs.stringifyUrl({
-      url: `${applicationUrls.gatewayUrl}/search/AuctionItems`,
+      url: '/search/AuctionItems',
       query: params,
     });
   }, [params]);
@@ -56,7 +54,7 @@ export const useGetAuctionById = (id: string) => {
     const [response, setResponse] = useState<Auction | undefined>(undefined);
   
     useEffect(() => {
-        httpGet<Auction>(`${applicationUrls.gatewayUrl}/auctions/${id}`).then((result) => {
+        httpGet<Auction>(`/auctions/${id}`).then((result) => {
             setResponse(result);
             setIsLoading(false);
           }).catch((error) => {
@@ -75,7 +73,7 @@ export const useUpdateAuction = () => {
 
   const update = (data: Partial<Auction>) => {
     setIsUpdating(true);
-    const url = `${applicationUrls.gatewayUrl}/auctions/${data.id}`;
+    const url = `/auctions/${data.id}`;
 
     httpPut(url, data, true)
       .then((r) => {
@@ -100,7 +98,7 @@ export const useDeleteAuction = () => {
 
   const deleteAuction = (id: string) => {
     setIsDeleting(true);
-    const url = `${applicationUrls.gatewayUrl}/auctions/${id}`;
+    const url = `/auctions/${id}`;
 
     httpDelete(url, true)
       .then((r) => {
@@ -125,7 +123,7 @@ export const useCreateAuction = () => {
 
   const create = (data: Auction) => {
     setIsCreating(true);
-    const url = `${applicationUrls.gatewayUrl}/auctions`;
+    const url = `/auctions`;
 
     httpPost<Auction>(url, data, true).then((r) => {
       invalidatePath('/');

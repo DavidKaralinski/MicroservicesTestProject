@@ -3,7 +3,6 @@
 import { Bid } from "@/types";
 import { httpGet, httpPost, invalidatePath, httpDelete } from "./httpActions";
 import { useEffect, useState } from "react";
-import { applicationUrls } from "@/common/appConfiguration";
 import toast from "react-hot-toast";
 import { getCurrentUser } from "./authActions";
 import { User } from "next-auth";
@@ -13,7 +12,7 @@ export const useGetBidsByAuctionId = (auctionId: string) => {
     const [response, setResponse] = useState<Bid[] | undefined>(undefined);
   
     useEffect(() => {
-        httpGet<Bid[]>(`${applicationUrls.gatewayUrl}/bids?auctionId=${auctionId}`, true).then((result) => {
+        httpGet<Bid[]>(`/bids?auctionId=${auctionId}`, true).then((result) => {
             setResponse(result);
             setIsLoading(false);
           }).catch((error) => {
@@ -31,7 +30,7 @@ export const useCreateBid = () => {
 
   const create = (bid: Bid) => {
     setIsCreating(true);
-    const url = `${applicationUrls.gatewayUrl}/bids`;
+    const url = `/bids`;
 
     httpPost<Bid>(url, bid, true).then((r) => {
       invalidatePath('/');
