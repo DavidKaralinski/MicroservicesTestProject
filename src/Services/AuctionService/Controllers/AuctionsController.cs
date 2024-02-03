@@ -35,7 +35,8 @@ public class AuctionsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<AuctionDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        var item = await _dbContext.Auctions.Include(a => a.Item).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var item = await _dbContext.Auctions.Include(a => a.Item)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if(item is null)
         {
@@ -83,7 +84,8 @@ public class AuctionsController : ControllerBase
      [FromBody] UpdateAuctionDto auctionDto,
      CancellationToken cancellationToken = default)
     {
-        var item = await _dbContext.Auctions.Include(a => a.Item).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var item = await _dbContext.Auctions.Include(a => a.Item)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (item is null)
         {

@@ -35,7 +35,7 @@ export default function BidsList({ user, auction }: Props) {
 
     const highestBid = bids?.reduce((prev, current) => prev > current.amount
         ? prev
-        : current.status.toString().includes('Accepted')
+        : current.status?.toString().includes('Accepted')
             ? current.amount
             : prev, 0);
 
@@ -63,7 +63,7 @@ export default function BidsList({ user, auction }: Props) {
             </div>
 
             <div className='px-2 pb-2 text-gray-500'>
-                {isOpen ? (
+                {!isOpen ? (
                     <div className='flex items-center justify-center p-2 text-lg font-semibold'>
                         This auction has finished
                     </div>

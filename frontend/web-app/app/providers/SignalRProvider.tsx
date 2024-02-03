@@ -50,7 +50,7 @@ export default function SignalRProvider({ children, user }: Props) {
           }
 
           if(bid.bidderName !== user.username){
-            addBid({ status: bid.bidStatus, amount: bid.bidAmount, ...bid } as Bid);
+            addBid({ status: bid.bidStatus, amount: bid.bidAmount, id: bid.bidId, ...bid } as Bid);
           }
         });
 

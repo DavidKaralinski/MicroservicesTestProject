@@ -36,7 +36,8 @@ public class BidPlacedEventConsumer : IConsumer<BidPlacedEvent>
                 throw new ArgumentException("Invalid auction id", nameof(BidPlacedEvent.AuctionId));
             }
 
-            var auction = await _dbContext.Auctions.FirstOrDefaultAsync(x => x.Id == auctionId);
+            var auction = await _dbContext.Auctions.Include(x => x.Item)
+                .FirstOrDefaultAsync(x => x.Id == auctionId);
 
             if (auction is null)
             {

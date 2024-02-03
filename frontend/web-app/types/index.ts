@@ -40,7 +40,7 @@ export type Bid = {
 }
 
 export type BidPlacedNotification = {
-  id: number;
+  bidId: number;
   auctionId: string;
   bidAmount: number;
   bidTime: string;
