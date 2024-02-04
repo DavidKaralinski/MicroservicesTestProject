@@ -18,7 +18,6 @@ type Props = {
 
 export default function BidsList({ user, auction }: Props) {
     const { response: bidsData, isLoading } = useGetBidsByAuctionId(auction.id);
-
     const bids = useBidsStore(state => state.bids);
     const isOpen = useBidsStore(state => state.isOpen);
     const setIsOpen = useBidsStore(state => state.setIsOpen);
@@ -71,7 +70,7 @@ export default function BidsList({ user, auction }: Props) {
                     <div className='flex items-center justify-center p-2 text-lg font-semibold'>
                         Please login to make a bid
                     </div>
-                ) : user && user.username === auction.sellerName ? (
+                ) : user && user.name === auction.sellerName ? (
                     <div className='flex items-center justify-center p-2 text-lg font-semibold'>
                         You cannot bid on your own auction
                     </div>

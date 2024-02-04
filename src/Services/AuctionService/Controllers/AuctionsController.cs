@@ -7,6 +7,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web.Resource;
 
 namespace AuctionService.Controllers;
 
@@ -47,6 +48,7 @@ public class AuctionsController : ControllerBase
     }
 
     [Authorize]
+    [RequiredScope("auctions.write")]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> Create([FromBody] CreateAuctionDto auctionDto, CancellationToken cancellationToken = default)
     {
@@ -79,6 +81,7 @@ public class AuctionsController : ControllerBase
     }
 
     [Authorize]
+    [RequiredScope("auctions.write")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Update([FromRoute] Guid id,
      [FromBody] UpdateAuctionDto auctionDto,
@@ -111,6 +114,7 @@ public class AuctionsController : ControllerBase
     }
 
     [Authorize]
+    [RequiredScope("auctions.write")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete([FromRoute] Guid id,
      CancellationToken cancellationToken = default)

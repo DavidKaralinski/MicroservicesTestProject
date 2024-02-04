@@ -9,11 +9,13 @@ using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web.Resource;
 
 namespace BidService.Controllers;
 
 [ApiController]
 [Authorize]
+[RequiredScope("auctions.write")]
 [Route("api/[controller]")]
 public class BidsController : ControllerBase
 {

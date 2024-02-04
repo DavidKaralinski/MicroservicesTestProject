@@ -4,7 +4,9 @@ using AuctionService.Grpc;
 using AuctionService.IntegrationEvents.Consumers;
 using IntegrationEvents.Events;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,13 +66,14 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-builder.Services.AddAuthentication().AddJwtBearer(opt => 
-{
-    opt.Authority = configuration["IdentityServiceUrl"];
-    opt.RequireHttpsMetadata = false;
-    opt.TokenValidationParameters.ValidateAudience = false;
-    opt.TokenValidationParameters.NameClaimType = "user_name";
-});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApi(options =>
+    {
+        configuration.Bind("AzureAdB2C", options);
+
+        options.TokenValidationParameters.NameClaimType = "name";
+    },
+    options => { configuration.Bind("AzureAdB2C", options); });
 
 var app = builder.Build();
 

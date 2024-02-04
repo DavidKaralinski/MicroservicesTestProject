@@ -31,6 +31,8 @@ export const httpPut = async(url: string, data: any, needsAuthorization?: boolea
         body: JSON.stringify(data)
     };
 
+    console.log(requestOptions);
+
     const res = await fetch(apiUrl + url, requestOptions);
     if(!res.ok) throw new Error(res.statusText);
 

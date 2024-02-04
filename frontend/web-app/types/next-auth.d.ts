@@ -21,5 +21,6 @@ declare module 'next-auth/jwt' {
     interface JWT {
         username: string;
         access_token?: string;
+        exp: number;
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -7,16 +8,18 @@ builder.Services.AddReverseProxy()
     .LoadFromConfig(configuration.GetSection("ReverseProxy"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt =>
+            .AddMicrosoftIdentityWebApi(options =>
     {
-        opt.Authority = configuration["IdentityServiceUrl"];
-        opt.TokenValidationParameters.ValidateAudience = false;
-        opt.TokenValidationParameters.NameClaimType = "user_name";
-        opt.RequireHttpsMetadata = false;
-    });
+        configuration.Bind("AzureAdB2C", options);
 
-builder.Services.AddCors(opt => {
-    opt.AddPolicy("corsPolicy", b => {
+        options.TokenValidationParameters.NameClaimType = "name";
+    },
+    options => { configuration.Bind("AzureAdB2C", options); });
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("corsPolicy", b =>
+    {
         b.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(configuration["ClientAppUrl"] ?? "");
     });
 });
