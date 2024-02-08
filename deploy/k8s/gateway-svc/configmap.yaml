@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-configmap
+data:
+  ASPNETCORE_ENVIRONMENT: Kubernetes
+  AzureAdB2C__Instance: https://microservicestestproject.b2clogin.com
+  AzureAdB2C__Domain: microservicestestproject.onmicrosoft.com
+  AzureAdB2C__ClientId: 58eeaf89-f86a-4179-9fd0-b5565fbd54c6
+  AzureAdB2C__SignUpSignInPolicyId: B2C_1_microservicestestproject_signup_singnin
+  ClientAppUrl: https://app.testproject.com

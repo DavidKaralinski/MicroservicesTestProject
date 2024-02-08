@@ -2,6 +2,7 @@ using SearchService.Data;
 using MassTransit;
 using SearchService.IntegrationEvents.EventHandlers;
 using IntegrationEvents.Events;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -23,6 +24,12 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) => 
     {
+        cfg.UseMessageRetry(r => 
+        {
+            r.Handle<RabbitMqConnectionException>();
+            r.Interval(5, TimeSpan.FromSeconds(10));
+        });
+
         cfg.Host(configuration.GetValue("RabbitMq:Host", "localhost"), "/", x => 
         {
             x.Username(configuration.GetValue("Rabbitmq:User", "guest"));
@@ -57,6 +64,12 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+var retryPolicy = Policy
+    .Handle<TimeoutException>()
+    .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(10));
+
+await retryPolicy.ExecuteAndCaptureAsync(() => app.InitializeDatabaseAsync());
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -67,6 +80,5 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
-await app.InitializeDatabaseAsync();
 
 app.Run();

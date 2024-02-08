@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: karalinskidavid/microservicestestproject/web-app:latest
+        imagePullPolicy: Never
+        env:
+          - name: NEXTAUTH_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: NEXTAUTH_SECRET
+          - name: NEXTAUTH_URL
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: NEXTAUTH_URL
+          - name: API_URL
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: API_URL
+          - name: NEXT_PUBLIC_NOTIFICATIONS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: NEXT_PUBLIC_NOTIFICATIONS_URL
+          - name: AZURE_AD_B2C_TENANT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: AZURE_AD_B2C_TENANT_NAME
+          - name: AZURE_AD_B2C_CLIENT_ID
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: AZURE_AD_B2C_CLIENT_ID
+          - name: AZURE_AD_B2C_CLIENT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: AZURE_AD_B2C_CLIENT_SECRET
+          - name: AZURE_AD_B2C_PRIMARY_USER_FLOW
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: AZURE_AD_B2C_PRIMARY_USER_FLOW
+          - name: AZURE_AD_B2C_ACCESS_TOKEN_URL
+            valueFrom:
+              configMapKeyRef:
+                name: webapp-configmap
+                key: AZURE_AD_B2C_ACCESS_TOKEN_URL
+        ports:
+        - containerPort: 3000

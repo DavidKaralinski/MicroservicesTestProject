@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-svc
+spec:
+  selector:
+    matchLabels:
+      app: gateway-svc
+  template:
+    metadata:
+      labels:
+        app: gateway-svc
+    spec:
+      containers:
+      - name: gateway-svc
+        image: karalinskidavid/microservicestestproject/gateway-svc:latest
+        imagePullPolicy: Never
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            valueFrom: 
+              configMapKeyRef:
+                name: gateway-configmap
+                key: ASPNETCORE_ENVIRONMENT
+          - name: AzureAdB2C__Instance
+            valueFrom: 
+              configMapKeyRef:
+                name: gateway-configmap
+                key: AzureAdB2C__Instance
+          - name: AzureAdB2C__ClientId
+            valueFrom: 
+              configMapKeyRef:
+                name: gateway-configmap
+                key: AzureAdB2C__ClientId
+          - name: AzureAdB2C__Domain
+            valueFrom: 
+              configMapKeyRef:
+                name: gateway-configmap
+                key: AzureAdB2C__Domain
+          - name: AzureAdB2C__SignUpSignInPolicyId
+            valueFrom: 
+              configMapKeyRef:
+                name: gateway-configmap
+                key: AzureAdB2C__SignUpSignInPolicyId
+          - name: ClientAppUrl
+            valueFrom: 
+              configMapKeyRef:
+                name: gateway-configmap
+                key: ClientAppUrl

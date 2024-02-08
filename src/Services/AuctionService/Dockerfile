@@ -19,4 +19,3 @@ FROM base AS FINAL
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "AuctionService.dll"]
-

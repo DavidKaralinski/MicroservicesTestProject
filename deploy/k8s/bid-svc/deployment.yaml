@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bid-svc
+spec:
+  selector:
+    matchLabels:
+      app: bid-svc
+  template:
+    metadata:
+      labels:
+        app: bid-svc
+    spec:
+      containers:
+      - name: bid-svc
+        image: karalinskidavid/microservicestestproject/bid-svc:latest
+        imagePullPolicy: Never
+        env:
+          - name: RabbitMq__Host
+            valueFrom: 
+              configMapKeyRef:
+                name: bid-configmap
+                key: RabbitMq__Host
+          - name: RabbitMq__User
+            valueFrom:
+              configMapKeyRef:
+                name: bid-configmap
+                key: RabbitMq__User
+          - name: RabbitMq__Password
+            valueFrom:
+              configMapKeyRef:
+                name: bid-configmap
+                key: RabbitMq__Password
+          - name: ConnectionStrings__BidsDb
+            valueFrom:
+              configMapKeyRef:
+                name: bid-configmap
+                key: ConnectionStrings__BidsDb
+          - name: AzureAdB2C__Instance
+            valueFrom: 
+              configMapKeyRef:
+                name: bid-configmap
+                key: AzureAdB2C__Instance
+          - name: AzureAdB2C__ClientId
+            valueFrom: 
+              configMapKeyRef:
+                name: bid-configmap
+                key: AzureAdB2C__ClientId
+          - name: AzureAdB2C__Domain
+            valueFrom: 
+              configMapKeyRef:
+                name: bid-configmap
+                key: AzureAdB2C__Domain
+          - name: AzureAdB2C__SignUpSignInPolicyId
+            valueFrom: 
+              configMapKeyRef:
+                name: bid-configmap
+                key: AzureAdB2C__SignUpSignInPolicyId
+          - name: Grpc__AuctionsGrpcUrl
+            valueFrom: 
+              configMapKeyRef:
+                name: bid-configmap
+                key: Grpc__AuctionsGrpcUrl

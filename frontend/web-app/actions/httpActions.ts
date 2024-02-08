@@ -14,11 +14,18 @@ export const httpGet = async<T>(url: string, needsAuthorization?: boolean) => {
         method: 'GET'
     };
 
-    const res = await fetch(apiUrl + url, requestOptions);
-
-    if(!res.ok) throw new Error(res.statusText);
-
-    return await res.json() as T;
+    try{
+        const res = await fetch(apiUrl + url, requestOptions);
+        if(!res.ok){
+            console.log(res.statusText);
+            throw new Error(res.statusText);
+        } 
+        
+        return await res.json() as T;
+    }
+    catch(err){
+        console.log(err);
+    }
 }
 
 export const httpPut = async(url: string, data: any, needsAuthorization?: boolean) => {

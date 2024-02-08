@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom: 
+              configMapKeyRef:
+                name: rabbitmq-configmap
+                key: RABBITMQ_DEFAULT_USER
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom: 
+              configMapKeyRef:
+                name: rabbitmq-configmap
+                key: RABBITMQ_DEFAULT_PASS
+        ports:
+        - containerPort: 15672
+          name: rbmq-mgmt-port
+        - containerPort: 5672
+          name: rbmq-msg-port
+        volumeMounts: 
+        - mountPath: /var/data/rabbit
+          name: rabbitdata
+      volumes:
+        - name: rabbitdata
+          persistentVolumeClaim:
+            claimName: rabbit-claim

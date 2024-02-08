@@ -23,9 +23,11 @@ export default function SignalRProvider({ children, user }: Props) {
   const { setCurrentPrice, removeAuction, auctions } = useAuctionsStore();
   const { addBid, updateBidStatus } = useBidsStore();
 
-  const url = process.env.NODE_ENV === 'production' ? 'https://api.testproject.com/notifications' : process.env.NEXT_PUBLIC_NOTIFICATIONS_URL!;
-
   useEffect(() => {
+    const url = process.env.NODE_ENV === 'production'
+       ? 'https://api.testproject.com/notifications' 
+       : process.env.NEXT_PUBLIC_NOTIFICATIONS_URL!;
+       
     const newConnection = new HubConnectionBuilder()
       .withUrl(url)
       .withAutomaticReconnect()

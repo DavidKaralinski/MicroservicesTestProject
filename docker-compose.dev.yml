@@ -49,8 +49,8 @@ services:
   search-svc:
     image: karalinskidavid/microservicestestproject/search-svc:latest
     build: 
-      context: .
-      dockerfile: ./src/Services/SearchService/Dockerfile
+      context: ./
+      dockerfile: /src/Services/SearchService/Dockerfile
     ports:
       - 7002:80
     env_file:
@@ -73,6 +73,13 @@ services:
       - AzureAdB2C__Domain=microservicestestproject.onmicrosoft.com
       - AzureAdB2C__ClientId=58eeaf89-f86a-4179-9fd0-b5565fbd54c6
       - AzureAdB2C__SignUpSignInPolicyId=B2C_1_microservicestestproject_signup_singnin
+  web-app:
+    image: karalinskidavid/microservicestestproject/web-app:latest
+    build: 
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
+    env_file:
+      - frontend/web-app/.env.prod
   notification-svc:
     image: karalinskidavid/microservicestestproject/notification-svc:latest
     build: 

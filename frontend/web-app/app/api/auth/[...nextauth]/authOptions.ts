@@ -7,6 +7,9 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     AzureADB2CProvider({
+      httpOptions: {
+        timeout: 40000,
+      },
       id: "id-server",
       tenantId: process.env.AZURE_AD_B2C_TENANT_NAME,
       clientId: process.env.AZURE_AD_B2C_CLIENT_ID!,

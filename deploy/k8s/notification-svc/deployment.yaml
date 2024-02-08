@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-svc
+spec:
+  selector:
+    matchLabels:
+      app: notification-svc
+  template:
+    metadata:
+      labels:
+        app: notification-svc
+    spec:
+      containers:
+      - name: notification-svc
+        image: karalinskidavid/microservicestestproject/notification-svc:latest
+        imagePullPolicy: Never
+        env:
+          - name: RabbitMq__Host
+            valueFrom: 
+              configMapKeyRef:
+                name: notification-configmap
+                key: RabbitMq__Host
+          - name: RabbitMq__User
+            valueFrom:
+              configMapKeyRef:
+                name: notification-configmap
+                key: RabbitMq__User
+          - name: RabbitMq__Password
+            valueFrom:
+              configMapKeyRef:
+                name: notification-configmap
+                key: RabbitMq__Password
