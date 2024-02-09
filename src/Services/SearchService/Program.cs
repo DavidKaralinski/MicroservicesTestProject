@@ -60,7 +60,16 @@ builder.Services.AddMassTransit(x =>
 
         //cfg.ConfigureEndpoints(context);
     });
+
+    x.ConfigureHealthCheckOptions(x => 
+    {
+        x.Name = "MassTransit";
+        x.Tags.Add("ready");
+    });
 });
+
+builder.Services.AddHealthChecks()
+    .AddMongoDb(configuration.GetConnectionString("SearchDb")!, name: "MongoDb", tags: new [] { "ready" });
 
 var app = builder.Build();
 
@@ -80,5 +89,15 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/hc/ready", new()
+{
+    Predicate = healthCheck => healthCheck.Tags.Contains("ready")
+});
+
+app.MapHealthChecks("/hc/live", new()
+{
+    Predicate = _ => false
+});
 
 app.Run();

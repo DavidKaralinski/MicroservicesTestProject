@@ -59,12 +59,28 @@ builder.Services.AddMassTransit(x =>
             e.ConfigureConsumer<AcceptedBidStatusChangedEventConsumer>(context);
         });
     });
+
+    x.ConfigureHealthCheckOptions(x => 
+    {
+        x.Name = "MassTransit";
+        x.Tags.Add("ready");
+    });
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
 app.MapHub<NotificationHub>("/notifications");
+app.MapHealthChecks("/hc/ready", new()
+{
+    Predicate = healthCheck => healthCheck.Tags.Contains("ready")
+});
+
+app.MapHealthChecks("/hc/live", new()
+{
+    Predicate = _ => false
+});
 
 app.Run();

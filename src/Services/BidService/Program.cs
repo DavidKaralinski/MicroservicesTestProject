@@ -55,6 +55,12 @@ builder.Services.AddMassTransit(x =>
             e.ConfigureConsumer<AuctionDeletedEventConsumer>(context);
         });
     });
+
+    x.ConfigureHealthCheckOptions(x => 
+    {
+        x.Name = "MassTransit";
+        x.Tags.Add("ready");
+    });
 });
 
 builder.Services.AddControllers();
@@ -74,6 +80,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     },
     options => { configuration.Bind("AzureAdB2C", options); });
 
+builder.Services.AddHealthChecks()
+    .AddNpgSql(configuration.GetConnectionString("BidsDb")!, "SELECT 1;", name: "PostgresDb", tags: new [] { "ready" });
+
 var app = builder.Build();
 
 app.InitializeDb();
@@ -89,5 +98,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/hc/ready", new()
+{
+    Predicate = healthCheck => healthCheck.Tags.Contains("ready")
+});
+
+app.MapHealthChecks("/hc/live", new()
+{
+    Predicate = _ => false
+});
 
 app.Run();

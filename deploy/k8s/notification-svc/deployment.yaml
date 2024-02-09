@@ -15,6 +15,14 @@ spec:
       - name: notification-svc
         image: karalinskidavid/microservicestestproject/notification-svc:latest
         imagePullPolicy: Never
+        readinessProbe:
+          httpGet:
+            path: /hc/ready
+            port: 80
+        livenessProbe:
+          httpGet:
+            path: /hc/live
+            port: 80
         env:
           - name: RabbitMq__Host
             valueFrom: 
