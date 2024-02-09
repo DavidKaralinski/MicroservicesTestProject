@@ -51,7 +51,7 @@ export default function SignalRProvider({ children, user }: Props) {
             setCurrentPrice(bid.auctionId, bid.bidAmount);
           }
 
-          if(bid.bidderName !== user.username){
+          if(bid.bidderName !== user.name){
             addBid({ status: bid.bidStatus, amount: bid.bidAmount, id: bid.bidId, ...bid } as Bid);
           }
         });
@@ -73,7 +73,7 @@ export default function SignalRProvider({ children, user }: Props) {
         });
 
         connection.on("AuctionCreated", (auction: Auction) => {
-            if(user.username !== auction.sellerName){
+            if(user.name !== auction.sellerName){
                 return toast(<AuctionCreatedToast auction={auction} />, 
                                 {duration: 10000})
             }

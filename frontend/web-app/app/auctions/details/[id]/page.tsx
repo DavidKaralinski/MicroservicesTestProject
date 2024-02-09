@@ -32,9 +32,9 @@ export default function AuctionDetailsPage({params}: {params: {id: string}}) {
       <div className="flex justify-between">
         <div className='flex items-center gap-2'>
           <Heading title={auction?.make + " " + auction.model} />
-          {auction.sellerName === currentUser?.username && 
+          {auction.sellerName === currentUser?.name && 
            <Button onClick={() => router.push(`/auctions/update/${auction.id}`)} outline>Update</Button>}
-          {auction.sellerName === currentUser?.username && 
+          {auction.sellerName === currentUser?.name && 
           <Button isProcessing={isDeleting} color='failure' onClick={() => {
             deleteAuction(auction.id);
           }} outline>Delete</Button>}

@@ -20,10 +20,10 @@ export default function UserActions({ user }: UserActionsProps) {
 
   return (
     <Dropdown label={user.name} inline>
-      <Dropdown.Item onClick={() => { setParams({seller: user.username}); router.push('/') } } icon={HiUser}>
+      <Dropdown.Item onClick={() => { setParams({seller: user.name ?? ''}); router.push('/') } } icon={HiUser}>
         My auctions
       </Dropdown.Item>
-      <Dropdown.Item onClick={() => { setParams({winner: user.username}); router.push('/') } }  icon={AiFillTrophy}>
+      <Dropdown.Item onClick={() => { setParams({winner: user.name ?? ''}); router.push('/') } }  icon={AiFillTrophy}>
         Auctions won
       </Dropdown.Item>
       <Dropdown.Item onClick={() => { router.push('/auctions/create') } }  icon={AiFillCar}>
